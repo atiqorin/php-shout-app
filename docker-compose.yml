@@ -1,0 +1,39 @@
+version: '3'
+
+networks:
+  app_net:
+    external:
+      name: app_net
+
+services:
+  phpapache:
+      build: ./php
+      ports:
+          - "80:80"
+      volumes:
+          - ./public:/var/www/html
+      networks:
+          - app_net
+  mysql:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3306:3306" 
+    networks:
+      - app_net
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    links:
+      - mysql
+    ports:
+      - 8183:80
+    environment:
+      PMA_HOST: "docker.for.mac.localhost"
+      PMA_PORT: "3306"
+      PMA_USER: root
+      PMA_PASSWORD: admin
+      PMA_ARBITRARY: 1
+    networks:
+      - app_net
